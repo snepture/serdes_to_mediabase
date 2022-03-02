@@ -2,8 +2,8 @@ import json
 import re
 from collections import defaultdict
 
-f1 = open("/Users/yecsong/code/sonic-buildimage-games/platform/cisco/device/x86_64-8201_32fh_o-r0/30x100Gb_2x400Gb/port_config.ini","r")
-f2 = open("/Users/yecsong/code/sonic-buildimage-games/platform/cisco/device/x86_64-8201_32fh_o-r0/30x100Gb_2x400Gb/P4/8201_32fh_o.json","r")
+f1 = open("/Users/yecsong/code/sonic-buildimage-games/platform/cisco/device/x86_64-8201_32fh_o-r0/31x4x100Gb_1x10Gb/port_config.ini","r")
+f2 = open("/Users/yecsong/code/sonic-buildimage-games/platform/cisco/device/x86_64-8201_32fh_o-r0/31x4x100Gb_1x10Gb/P4/8201_32fh_o.json","r")
 load_dict = json.load(f2)
 
 serdes_dict = {}
@@ -34,7 +34,7 @@ for serpram in load_dict['devices'][0]['serdes_params']:
         media_dict[k] = temp
 
 # print(serdes_dict)
-print(json.dumps(sorted(media_dict.items()), indent = 1))
+# print(json.dumps(sorted(media_dict.items()), indent = 1))
 eth_dict = {}
 #eth_dict: '8': {'lane3': '2835', 'lane2': '2834', 'lane1': '2833', 'lane0': '2832'}
 lane_num = {}
@@ -47,6 +47,9 @@ for line in f1:
     # print(lanes)
     n = 0
     subdict = {}
+    if int(index) in eth_dict:
+        n = lane_num[int(index)]
+        subdict = eth_dict[int(index)]
     for lane in lanes.split(','):
         # print(lane)
         n_str = "lane" + str(n)
@@ -75,7 +78,7 @@ for e in eth_dict:
                 final_dict[e][new_key]['TX_POST'][l] = media_dict[m]['POST']
 
 final = sorted(final_dict.items())
-# data = json.dumps(final, indent = 1)
-# with open("./new.json","w") as f:
-#     f.write(data)
-#     print("done!")
+data = json.dumps(final, indent = 1)
+with open("./new2.json","w") as f:
+    f.write(data)
+    print("done!")
