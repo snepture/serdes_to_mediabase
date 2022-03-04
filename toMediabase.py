@@ -4,7 +4,7 @@ from collections import defaultdict
 
 fport_config = "/Users/yecsong/code/serdes-to-mediabase/1x100Gb_31x4x100Gb/port_config.ini"
 fserdes_json = "/Users/yecsong/code/serdes-to-mediabase/1x100Gb_31x4x100Gb/P4/8201_32fh_o.json"
-final_json = "./new_json.json"
+final_json = "./media_settings_new.json"
 
 
 f1 = open(fport_config,"r")
@@ -23,9 +23,7 @@ for serpram in load_dict['devices'][0]['serdes_params']:
         serdes_id = serpram.split(',')[2]
         speed = serpram.split(',')[3]
         meterial = serpram.split(',')[4]
-        # print("slice:{}, ifg:{}, serdes:{}, speed:{}, meterial:{}".format(slice_id, ifg_id, serdes_id, speed, meterial))
         first_lane_num = int((int(slice_id) * 2 + int(ifg_id)) * (0x100) + int(serdes_id))
-        # print("first_lan_num:{}".format(first_lane_num))
         serdes_dict[serpram] = first_lane_num
         temp['speed'] = speed
         temp['meterial'] = meterial
@@ -36,7 +34,6 @@ for serpram in load_dict['devices'][0]['serdes_params']:
 
         k = str(first_lane_num) + '_' + str(speed) + '_' + str(meterial)
         media_dict[k] = temp
-# print(json.dumps(sorted(media_dict.items()), indent = 1))
 
 eth_dict = {}
 #eth_dict: '8': {'lane3': '2835', 'lane2': '2834', 'lane1': '2833', 'lane0': '2832'}
@@ -59,8 +56,7 @@ for line in f1:
         lane_num[int(index)] = n
     eth_dict[int(index)] = subdict    
 
-# print(sorted(eth_dict.items()))
-# print(eth_dict)
+
 tree = lambda: defaultdict(tree)
 final_dict = tree()
 
@@ -76,8 +72,9 @@ for e in eth_dict:
                 final_dict[e][new_key]['pre1'][l] = media_dict[m]['pre1']
                 final_dict[e][new_key]['post1'][l] = media_dict[m]['post1']
 
-final = sorted(final_dict.items())
-data = json.dumps(final, indent = 1)
+pre = {}
+pre["PORT_MEDIA_SETTINGS"] = final_dict
+data = json.dumps(pre, indent = 4)
 with open(final_json,"w") as f:
     f.write(data)
     print("done!")
