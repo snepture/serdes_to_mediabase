@@ -23,7 +23,9 @@ for serpram in load_dict['devices'][0]['serdes_params']:
         serdes_id = serpram.split(',')[2]
         speed = serpram.split(',')[3]
         meterial = serpram.split(',')[4]
+        # print("slice:{}, ifg:{}, serdes:{}, speed:{}, meterial:{}".format(slice_id, ifg_id, serdes_id, speed, meterial))
         first_lane_num = int((int(slice_id) * 2 + int(ifg_id)) * (0x100) + int(serdes_id))
+        # print("first_lan_num:{}".format(first_lane_num))
         serdes_dict[serpram] = first_lane_num
         temp['speed'] = speed
         temp['meterial'] = meterial
@@ -56,7 +58,6 @@ for line in f1:
         lane_num[int(index)] = n
     eth_dict[int(index)] = subdict    
 
-
 tree = lambda: defaultdict(tree)
 final_dict = tree()
 
@@ -66,11 +67,16 @@ for e in eth_dict:
             if int(eth_dict[e][l]) == int(m.split('_')[0]):
                 if media_dict[m]['meterial'] == 'COPPER':
                     new_key = str(int(media_dict[m]['speed']) * int(lane_num[e])) + 'G' + '_' + 'COPPER'
-                else:
+                elif media_dict[m]['meterial'] == 'OPTIC':
                     new_key = str(int(media_dict[m]['speed']) * int(lane_num[e])) + 'G' + '_' + 'OPTIC'
-                final_dict[e][new_key]['main'][l] = media_dict[m]['main']
-                final_dict[e][new_key]['pre1'][l] = media_dict[m]['pre1']
-                final_dict[e][new_key]['post1'][l] = media_dict[m]['post1']
+                elif media_dict[m]['meterial'] == 'LOOPBACK':
+                    continue
+                else:
+                    continue
+
+                final_dict[e][new_key]['main'][l] = str(media_dict[m]['main'])
+                final_dict[e][new_key]['pre1'][l] = str(media_dict[m]['pre1'])
+                final_dict[e][new_key]['post1'][l] = str(media_dict[m]['post1'])
 
 pre = {}
 pre["PORT_MEDIA_SETTINGS"] = final_dict
