@@ -1,10 +1,21 @@
 import json
 import re
 from collections import defaultdict
+import argparse
 
-fport_config = "/Users/yecsong/code/serdes-to-mediabase/1x100Gb_31x4x100Gb/port_config.ini"
-fserdes_json = "/Users/yecsong/code/serdes-to-mediabase/1x100Gb_31x4x100Gb/P4/8201_32fh_o.json"
-final_json = "./media_settings_new.json"
+parser = argparse.ArgumentParser(description="filename")
+parser.add_argument('-p','--port_config', type=str, required=True, help='please input port_config.ini file location')
+parser.add_argument('-s','--serdes_json', type=str, required=True, help='please input serdes.json file location')
+parser.add_argument('-f','--final_json', type=str, required=True, help='please input final file name')
+args = parser.parse_args()
+
+
+# fport_config = "/Users/yecsong/code/serdes-to-mediabase/1x100Gb_31x4x100Gb/port_config.ini"
+# fserdes_json = "/Users/yecsong/code/serdes-to-mediabase/1x100Gb_31x4x100Gb/P4/8201_32fh_o.json"
+# final_json = "./media_settings_new.json"
+fport_config = args.port_config
+fserdes_json = args.serdes_json
+final_json = args.final_json
 
 
 f1 = open(fport_config,"r")
@@ -74,9 +85,9 @@ for e in eth_dict:
                 else:
                     continue
 
-                final_dict[e][new_key]['main'][l] = str(media_dict[m]['main'])
-                final_dict[e][new_key]['pre1'][l] = str(media_dict[m]['pre1'])
-                final_dict[e][new_key]['post1'][l] = str(media_dict[m]['post1'])
+                final_dict[e][new_key]['main'][l] = str(hex(media_dict[m]['main']))
+                final_dict[e][new_key]['pre1'][l] = str(hex(media_dict[m]['pre1']))
+                final_dict[e][new_key]['post1'][l] = str(hex(media_dict[m]['post1']))
 
 pre = {}
 pre["PORT_MEDIA_SETTINGS"] = final_dict
